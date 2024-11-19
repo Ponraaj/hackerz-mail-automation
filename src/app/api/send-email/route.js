@@ -1,14 +1,38 @@
-import { sendEmail } from "@/utils/ses";
+import { sendEmail } from "@/utils/smtp";
+import prisma from "@/lib/prisma";
 
 export async function POST(req) {
   try {
-    const { to, subject, body } = await req.json()
+    const { from, to, templateName, placeHolders } = await req.json();
 
-    await sendEmail({ to, subject, body })
+    const sender = await prisma.userEmail.findUnique({
+      where: { email: from },
+      select: { appPassword: true },
+    });
 
-    return new Response(JSON.stringify({ message: "Mail Sent Successfully 🟢" }), { status: 200 })
+    if (!sender || !sender.appPassword) {
+      return new Response(
+        JSON.stringify({ message: "No app password found for the sender email" }),
+        { status: 400 }
+      );
+    }
+
+    await sendEmail({
+      from,
+      to,
+      templateName,
+      placeHolders,
+      appPassword: sender.appPassword,
+    });
+
+    return new Response(JSON.stringify({ message: "Mail Sent Successfully 🟢" }), { status: 200 });
+
   } catch (error) {
-    console.log("Error Sending Mail", error)
-    return new Response(JSON.stringify({ message: "Server Error ", error: error.message }), { status: 500 })
+    console.log("Error Sending Mail:", error);
+    return new Response(
+      JSON.stringify({ message: "Server Error", error: error.message }),
+      { status: 500 }
+    );
   }
 }
+

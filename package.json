@@ -10,12 +10,15 @@
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.693.0",
-    "@types/aws-sdk": "^2.7.4",
+    "@types/nodemailer": "^6.4.16",
     "next": "15.0.3",
+    "nodemailer": "^6.9.16",
     "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106"
+    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@prisma/client": "^5.22.0",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "postcss": "^8",
