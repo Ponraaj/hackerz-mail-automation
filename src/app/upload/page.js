@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import Link from "next/link";
 import { Upload, File, FileText } from "lucide-react";
 
 export default function UploadPage() {
@@ -88,12 +89,12 @@ export default function UploadPage() {
         </form>
 
         <button className="mt-4">
-          <a
+          <Link
             href="/"
             className="inline-block px-7 py-3 text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg focus:ring-2 focus:ring-blue-300 focus:outline-none transition duration-300 ease-in-out"
           >
             Back
-          </a>
+          </Link>
         </button>
 
 
