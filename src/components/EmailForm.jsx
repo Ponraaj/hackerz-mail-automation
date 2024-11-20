@@ -6,12 +6,12 @@ import * as XLSX from "xlsx";
 const EmailForm = () => {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [templates, setTemplates] = useState([])
-  const [selectedSender, setSelectedSender] = useState(""); // State for selected sender email
-  const [subject, setSubject] = useState(""); // Subject input
-  const [emails, setEmails] = useState([]); // Extracted recipient emails
-  const [file, setFile] = useState(null); // Uploaded Excel file
-  const [filePreview, setFilePreview] = useState([]); // Preview of extracted data
-  const [senderOptions, setSenderOptions] = useState([]); // Sender email options
+  const [selectedSender, setSelectedSender] = useState("");
+  const [subject, setSubject] = useState("");
+  const [emails, setEmails] = useState([]);
+  const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState([]);
+  const [senderOptions, setSenderOptions] = useState([]);
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -25,7 +25,7 @@ const EmailForm = () => {
     };
     const fetchSenderEmails = async () => {
       try {
-        const response = await fetch("/api/senders"); // API endpoint to get senders
+        const response = await fetch("/api/senders");
         const data = await response.json();
         setSenderOptions(data.senders);
       } catch (error) {
