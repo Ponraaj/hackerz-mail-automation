@@ -1,5 +1,5 @@
 import { sendEmail } from "@/utils/smtp";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req) {
   try {

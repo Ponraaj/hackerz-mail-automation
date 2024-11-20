@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
@@ -14,32 +14,27 @@ export async function GET() {
 export async function POST(req) {
   try {
     const { email, appPassword } = await req.json();
-
     if (!email || !appPassword) {
       return new Response(
         JSON.stringify({ error: "Email and appPassword are required" }),
         { status: 400 }
       );
     }
-
     const existingSender = await prisma.userEmail.findUnique({
       where: { email },
     });
-
     if (existingSender) {
       return new Response(
         JSON.stringify({ error: "Sender email already exists" }),
         { status: 409 }
       );
     }
-
     const newSender = await prisma.userEmail.create({
       data: {
         email,
         appPassword,
       },
     });
-
     return new Response(
       JSON.stringify({ message: "Sender email added successfully", newSender }),
       { status: 201 }
