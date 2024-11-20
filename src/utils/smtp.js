@@ -16,22 +16,45 @@ const createTransporter = async (from, appPassword) => {
   };
 };
 
-export const sendEmail = async ({ from, to, templateName, placeHolders, appPassword }) => {
+export const sendEmail = async ({ from, to, templateName, placeHolders, appPassword, excelFileName }) => {
   const { transporter, senderEmail } = await createTransporter(from, appPassword);
-  const template = loadTemplate(templateName);
+  const template = await loadTemplate(templateName);
 
   for (const userPlaceholders of placeHolders) {
-    const mailBody = replacePlaceHolders(template, userPlaceholders);
+    try {
+      const mailBody = await replacePlaceHolders(template, userPlaceholders);
 
-    const mailOpts = {
-      from: `"Hackerz" <${senderEmail}>`,
-      to: userPlaceholders.email,
-      subject: userPlaceholders.subject,
-      text: mailBody.replace(/<[^>]+>/g, ""),
-      html: mailBody,
-    };
+      const mailOpts = {
+        from: `"Hackerz" <${senderEmail}>`,
+        to: userPlaceholders.email,
+        subject: userPlaceholders.subject,
+        text: mailBody.replace(/<[^>]+>/g, ""),
+        html: mailBody,
+      };
 
-    await transporter.sendMail(mailOpts);
+      await transporter.sendMail(mailOpts);
+
+      await prisma.emailStatus.create({
+        data: {
+          email: userPlaceholders.email,
+          subject: userPlaceholders.subject,
+          status: 'sent',
+          delivered: true,
+          excelFileName: excelFileName,
+        },
+      });
+    } catch (err) {
+      await prisma.emailStatus.create({
+        data: {
+          email: userPlaceholders.email,
+          subject: userPlaceholders.subject,
+          status: 'failed',
+          delivered: false,
+          excelFileName: excelFileName,
+        },
+      });
+      console.log(`Error sending email to ${userPlaceholders.email}: ${err.message}`);
+    }
   }
 };
 

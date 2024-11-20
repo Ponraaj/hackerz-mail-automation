@@ -19,3 +19,13 @@ model UserEmail {
   appPassword String
   createdAt   DateTime @default(now())
 }
+
+model EmailStatus {
+  id            Int      @id @default(autoincrement())
+  email         String
+  subject       String
+  status        String // 'sent' or 'failed'
+  delivered     Boolean // true if email was delivered successfully
+  excelFileName String // Store the reference to the Excel file
+  timestamp     DateTime @default(now()) // Timestamp for email status record
+}

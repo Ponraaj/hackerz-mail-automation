@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function POST(req) {
   try {
-    const { from, to, templateName, placeHolders } = await req.json();
+    const { from, to, templateName, placeHolders, excelFileName } = await req.json();
 
     const sender = await prisma.userEmail.findUnique({
       where: { email: from },
@@ -23,6 +23,7 @@ export async function POST(req) {
       templateName,
       placeHolders,
       appPassword: sender.appPassword,
+      excelFileName: excelFileName,
     });
 
     return new Response(JSON.stringify({ message: "Mail Sent Successfully 🟢" }), { status: 200 });

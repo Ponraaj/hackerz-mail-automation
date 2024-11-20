@@ -5,6 +5,7 @@ import * as XLSX from "xlsx";
 
 const EmailForm = () => {
   const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [templates, setTemplates] = useState([])
   const [selectedSender, setSelectedSender] = useState(""); // State for selected sender email
   const [subject, setSubject] = useState(""); // Subject input
   const [emails, setEmails] = useState([]); // Extracted recipient emails
@@ -13,6 +14,15 @@ const EmailForm = () => {
   const [senderOptions, setSenderOptions] = useState([]); // Sender email options
 
   useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const response = await fetch("/api/templates");
+        const data = await response.json();
+        setTemplates(data.templates || []);
+      } catch (error) {
+        console.error("Error fetching templates:", error);
+      }
+    };
     const fetchSenderEmails = async () => {
       try {
         const response = await fetch("/api/senders"); // API endpoint to get senders
@@ -24,6 +34,7 @@ const EmailForm = () => {
     };
 
     fetchSenderEmails();
+    fetchTemplates();
   }, []);
 
   const handleSubjectChange = (e) => setSubject(e.target.value);
@@ -64,6 +75,7 @@ const EmailForm = () => {
     }));
 
     try {
+      console.log(file.name)
       const response = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -72,6 +84,7 @@ const EmailForm = () => {
           to: recipientEmails,
           templateName: selectedTemplate,
           placeHolders: personalizedPlaceholders,
+          excelFileName: file.name
         }),
       });
 
@@ -126,7 +139,11 @@ const EmailForm = () => {
           className="w-full p-2 border border-gray-300 rounded-md"
         >
           <option value="">-- Select Template --</option>
-          <option value="reg-1">Registration Template</option>
+          {templates.map((template, index) => (
+            <option key={index} value={template}>
+              {template}
+            </option>
+          ))}
         </select>
       </div>
 

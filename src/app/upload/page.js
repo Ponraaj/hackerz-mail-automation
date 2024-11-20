@@ -1,55 +1,3 @@
-// "use client";
-
-// import { useState } from "react";
-
-// export default function UploadPage() {
-//   const [file, setFile] = useState(null);
-//   const [status, setStatus] = useState("");
-
-//   const handleFileChange = (event) => {
-//     setFile(event.target.files[0]);
-//   };
-
-//   const handleUpload = async (event) => {
-//     event.preventDefault();
-
-//     if (!file) {
-//       setStatus("Please select a file.");
-//       return;
-//     }
-
-//     const formData = new FormData();
-//     formData.append("file", file);
-
-//     try {
-//       const response = await fetch("/api/upload", {
-//         method: "POST",
-//         body: formData,
-//       });
-
-//       if (response.ok) {
-//         const data = await response.json();
-//         setStatus(`File uploaded successfully`);
-//       } else {
-//         const error = await response.json();
-//         setStatus(`Error: ${error.error}`);
-//       }
-//     } catch (error) {
-//       setStatus("Error uploading file.");
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <h1>Upload HTML File</h1>
-//       <form onSubmit={handleUpload}>
-//         <input type="file" accept=".html" onChange={handleFileChange} />
-//         <button type="submit">Upload</button>
-//       </form>
-//       {status && <p>{status}</p>}
-//     </div>
-//   );
-// }
 'use client';
 
 import { useState } from "react";
@@ -73,10 +21,16 @@ export default function UploadPage() {
       return;
     }
 
+    if (file.size > 5 * 1024 * 1024) {
+      setStatus("File size exceeds the 5MB limit.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);
 
     try {
+      setStatus("Uploading...");
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
@@ -84,13 +38,14 @@ export default function UploadPage() {
 
       if (response.ok) {
         const data = await response.json();
-        setStatus(`File uploaded successfully`);
+        setStatus("File uploaded successfully!");
         setFile(null);
       } else {
         const error = await response.json();
         setStatus(`Error: ${error.error}`);
       }
     } catch (error) {
+      console.log("Upload error:", error);
       setStatus("Error uploading file.");
     }
   };
@@ -101,18 +56,18 @@ export default function UploadPage() {
         <h1 className="text-2xl font-bold text-center mb-6 flex items-center justify-center text-gray-800">
           <FileText className="mr-2" /> Upload HTML Template
         </h1>
-        
+
         <form onSubmit={handleUpload} className="space-y-4">
           <div className="border-2 border-dashed border-blue-300 rounded-lg p-6 text-center">
-            <input 
-              type="file" 
+            <input
+              type="file"
               accept=".html"
               onChange={handleFileChange}
               className="hidden"
               id="file-upload"
             />
-            <label 
-              htmlFor="file-upload" 
+            <label
+              htmlFor="file-upload"
               className="cursor-pointer flex flex-col items-center space-y-3"
             >
               <Upload className="w-12 h-12 text-blue-500" />
@@ -122,8 +77,8 @@ export default function UploadPage() {
             </label>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={!file}
             className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors 
                        disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
@@ -131,23 +86,22 @@ export default function UploadPage() {
             <Upload className="mr-2" /> Upload Template
           </button>
         </form>
-        
+
         <button className="mt-4">
-  <a
-    href="/"
-    className="inline-block px-7 py-3 text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg focus:ring-2 focus:ring-blue-300 focus:outline-none transition duration-300 ease-in-out"
-  >
-    Back
-  </a>
-</button>
+          <a
+            href="/"
+            className="inline-block px-7 py-3 text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg focus:ring-2 focus:ring-blue-300 focus:outline-none transition duration-300 ease-in-out"
+          >
+            Back
+          </a>
+        </button>
 
 
         {status && (
-          <div className={`mt-4 p-3 rounded-lg text-center ${
-            status.includes('Error') 
-              ? 'bg-red-100 text-red-700' 
-              : 'bg-green-100 text-green-700'
-          }`}>
+          <div className={`mt-4 p-3 rounded-lg text-center ${status.includes('Error')
+            ? 'bg-red-100 text-red-700'
+            : 'bg-green-100 text-green-700'
+            }`}>
             {status}
           </div>
         )}
