@@ -22,4 +22,6 @@ model EmailStatus {
   delivered     Boolean
   excelFileName String
   timestamp     DateTime @default(now())
+  senderEmail   String
+  sessionId     String
 }

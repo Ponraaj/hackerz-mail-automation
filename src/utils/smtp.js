@@ -16,7 +16,7 @@ const createTransporter = async (from, appPassword) => {
   };
 };
 
-export const sendEmail = async ({ from, to, templateName, placeHolders, appPassword, excelFileName }) => {
+export const sendEmail = async ({ from, to, templateName, placeHolders, appPassword, excelFileName, sessionId }) => {
   const { transporter, senderEmail } = await createTransporter(from, appPassword);
   const template = await loadTemplate(templateName);
 
@@ -41,6 +41,8 @@ export const sendEmail = async ({ from, to, templateName, placeHolders, appPassw
           status: 'sent',
           delivered: true,
           excelFileName: excelFileName,
+          sessionId: sessionId,
+          senderEmail: from
         },
       });
     } catch (err) {
@@ -51,6 +53,8 @@ export const sendEmail = async ({ from, to, templateName, placeHolders, appPassw
           status: 'failed',
           delivered: false,
           excelFileName: excelFileName,
+          sessionId: sessionId,
+          senderEmail: from
         },
       });
       console.log(`Error sending email to ${userPlaceholders.email}: ${err.message}`);

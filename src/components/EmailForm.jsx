@@ -66,6 +66,21 @@ const EmailForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const confirmationMessage = `
+    You are about to send an email with the following details:
+    - Sender Email: ${selectedSender}
+    - Template: ${selectedTemplate}
+    - Subject: ${subject}
+    - Number of Recipients: ${emails.length}
+    Do you want to proceed?
+  `;
+
+    const userConfirmed = window.confirm(confirmationMessage.trim());
+    if (!userConfirmed) {
+      alert("Email sending canceled.");
+      return;
+    }
+
     const recipientEmails = emails.map((entry) => entry.email);
 
     const personalizedPlaceholders = emails.map((entry) => ({
@@ -74,8 +89,9 @@ const EmailForm = () => {
       email: entry.email,
     }));
 
+    const sessionId = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+
     try {
-      console.log(file.name)
       const response = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -84,14 +100,23 @@ const EmailForm = () => {
           to: recipientEmails,
           templateName: selectedTemplate,
           placeHolders: personalizedPlaceholders,
-          excelFileName: file.name
+          excelFileName: file.name,
+          sessionId: sessionId,
         }),
       });
 
       const result = await response.json();
-      alert(result.message);
+      const statusData = await fetch(`/api/email-status?sessionId=${sessionId}`).then((res) => res.json())
+
+      alert(
+        `Email operation completed:\n` +
+        `- Emails sent from: ${selectedSender}\n` +
+        `- Total emails sent: ${statusData.total}\n` +
+        `- Successfully delivered: ${statusData.delivered}\n` +
+        `- Failed deliveries: ${statusData.failed}`
+      );
     } catch (error) {
-      console.error("Error sending email: ", error);
+      console.log("Error sending email: ", error);
       alert("There was an error sending the emails.");
     }
   };
