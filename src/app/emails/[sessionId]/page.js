@@ -1,7 +1,10 @@
 import { notFound } from 'next/navigation';
+import checkEnvironment from '@/utils/env';
+import EmailsTable from '@/components/EmailsTable'; // Import the client component
 
 async function getEmailsForSession(sessionId) {
-  const response = await fetch(`/api/emails/${sessionId}`);
+  const baseUrl = checkEnvironment();
+  const response = await fetch(`${baseUrl}/api/emails/${sessionId}`);
 
   if (!response.ok) {
     return null;
@@ -19,33 +22,16 @@ export default async function SessionPage({ params }) {
     notFound();
   }
 
+  const excelFileName = emails[0].excelFileName
+
   return (
-    <div>
-      <h1>Emails in Session {sessionId}</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Subject</th>
-            <th>Status</th>
-            <th>Delivered</th>
-            <th>Timestamp</th>
-            <th>Sender</th>
-          </tr>
-        </thead>
-        <tbody>
-          {emails.map((email) => (
-            <tr key={email.id}>
-              <td>{email.email}</td>
-              <td>{email.subject}</td>
-              <td>{email.status}</td>
-              <td>{email.delivered ? 'Yes' : 'No'}</td>
-              <td>{new Date(email.timestamp).toLocaleString()}</td>
-              <td>{email.senderEmail || 'Unknown'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="w-full min-h-screen bg-gray-50 flex flex-col items-center py-8">
+      <h1 className="text-3xl font-bold text-gray-800 mb-4">
+        Emails in Session <span className="text-indigo-600">{sessionId}</span>
+      </h1>
+      <p className="text-gray-600 text-lg mb-6">Excel File: <span className="text-indigo-500 font-medium">{excelFileName}</span></p>
+      {/* Pass data to client component */}
+      <EmailsTable emails={emails} />
     </div>
   );
 }
