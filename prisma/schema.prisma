@@ -25,3 +25,8 @@ model EmailStatus {
   senderEmail   String
   sessionId     String
 }
+
+model AllowedEmail {
+  id    Int    @id @default(autoincrement())
+  email String @unique
+}

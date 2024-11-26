@@ -15,7 +15,7 @@ async function getEmailsForSession(sessionId) {
 }
 
 export default async function SessionPage({ params }) {
-  const { sessionId } = params;
+  const { sessionId } = await params;
   const emails = await getEmailsForSession(sessionId);
 
   if (!emails) {
