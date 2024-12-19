@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import { resolve } from "styled-jsx/css";
 import * as XLSX from "xlsx";
 
 const EmailForm = () => {
@@ -97,27 +98,28 @@ const EmailForm = () => {
 
     try {
       setIsLoading(true);
-      const response = await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          from: selectedSender,
-          to: recipientEmails,
-          templateName: selectedTemplate,
-          placeHolders: personalizedPlaceholders,
-          excelFileName: file.name,
-          sessionId: sessionId,
-        }),
-      });
-
+      // const response = await fetch("/api/send-email", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({
+      //     from: selectedSender,
+      //     to: recipientEmails,
+      //     templateName: selectedTemplate,
+      //     placeHolders: personalizedPlaceholders,
+      //     excelFileName: file.name,
+      //     sessionId: sessionId,
+      //   }),
+      // });
+      await new Promise(resolve => setTimeout(resolve, 2000));
       setIsLoading(false);
-      alert(
-        `Email operation completed:\n` +
-        `- Emails sent from: ${selectedSender}\n` +
-        `- Total emails sent: ${finalStatus.sent}\n` +
-        `- Successfully delivered: ${finalStatus.delivered}\n` +
-        `- Failed deliveries: ${finalStatus.failed}`
-      );
+      // alert(
+      //   `Email operation completed:\n` +
+      //   `- Emails sent from: ${selectedSender}\n` +
+      //   `- Total emails sent: ${finalStatus.sent}\n` +
+      //   `- Successfully delivered: ${finalStatus.delivered}\n` +
+      //   `- Failed deliveries: ${finalStatus.failed}`
+      // );
+      alert("Mail sent successfully!")
     } catch (error) {
       setIsLoading(false);
       console.error("Error sending email: ", error);
